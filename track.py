@@ -22,7 +22,7 @@ import torch.backends.cudnn as cudnn
 
 def compute_color_for_id(label):
     """
-    Simple function that adds fixed color depending on the id
+    Simple function that adds fixed color depending on the class
     """
     palette = (2 ** 11 - 1, 2 ** 15 - 1, 2 ** 20 - 1)
 
@@ -137,6 +137,7 @@ def detect(opt):
                 
                 # draw boxes for visualization
                 if len(outputs) > 0:
+                    li = []
                     for j, (output, conf) in enumerate(zip(outputs, confs)): 
                         
                         bboxes = output[0:4]
@@ -144,9 +145,12 @@ def detect(opt):
                         cls = output[5]
 
                         c = int(cls)  # integer class
+
                         label = f'{id} {names[c]} {conf:.2f}'
-                        color = compute_color_for_id(id)
-                        plot_one_box(bboxes, im0, label=label, color=color, line_thickness=2)
+                        color = (0,255,0)
+                        li.append(int(id))
+
+                        plot_one_box(bboxes, im0, label= str(int(id)), color=color, line_thickness=2)
 
                         if save_txt:
                             # to MOT format
@@ -158,7 +162,9 @@ def detect(opt):
                             with open(txt_path, 'a') as f:
                                f.write(('%g ' * 10 + '\n') % (frame_idx, id, bbox_top,
                                                            bbox_left, bbox_w, bbox_h, -1, -1, -1, -1))  # label format
-
+                    max_no = str(max(li))
+                    im0 = cv2.putText(im0, "Wasif Uddin", (850, 100), cv2.FONT_HERSHEY_PLAIN, 4, [0, 0, 0], 5)
+                    im0 = cv2.putText(im0, max_no, (1800, 100), cv2.FONT_HERSHEY_PLAIN, 4, [0, 0, 0], 5)
             else:
                 deepsort.increment_ages()
 
