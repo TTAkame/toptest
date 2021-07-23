@@ -12,7 +12,7 @@ __all__ = ['DeepSort']
 
 class DeepSort(object):
     def __init__(self, model_path, max_dist=0.2, min_confidence=0.3, nms_max_overlap=1.0, max_iou_distance=0.7, max_age=70, n_init=3, nn_budget=100, use_cuda=True):
-        self.min_confidence = min_confidence
+        self.min_confidence = 0.82
         self.nms_max_overlap = nms_max_overlap
 
         self.extractor = Extractor(model_path, use_cuda=use_cuda)
@@ -29,7 +29,7 @@ class DeepSort(object):
         features = self._get_features(bbox_xywh, ori_img)
         bbox_tlwh = self._xywh_to_tlwh(bbox_xywh)
         detections = [Detection(bbox_tlwh[i], conf, features[i]) for i, conf in enumerate(
-            confidences) if conf > self.min_confidence]
+            confidences) if conf > self.min_confidence and bbox_tlwh[i][3] >= 240]
 
         # run on non-maximum supression
         boxes = np.array([d.tlwh for d in detections])
